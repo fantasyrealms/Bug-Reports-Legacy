@@ -1,5 +1,6 @@
 package com.leon.bugreport.gui;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.leon.bugreport.keys.guiTextures;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -246,7 +247,7 @@ public class bugreportGUI {
 				if (config.getBoolean("enablePlayerHeads")) {
 					item = getPlayerHead(username);
 				} else {
-					item = createInfoItem(Material.PLAYER_HEAD, ChatColor.GOLD + "Username", ChatColor.WHITE + username, false);
+					item = createInfoItem(XMaterial.PLAYER_HEAD, ChatColor.GOLD + "Username", ChatColor.WHITE + username, false);
 				}
 				ItemMeta meta = item.getItemMeta();
 				if (meta != null) {
@@ -403,14 +404,14 @@ public class bugreportGUI {
 		if (config.getBoolean("enablePlayerHeads")) {
 			usernameItem = getPlayerHead(username);
 		} else {
-			usernameItem = createInfoItem(Material.PLAYER_HEAD, ChatColor.GOLD + "Username", ChatColor.WHITE + username, false);
+			usernameItem = createInfoItem(XMaterial.PLAYER_HEAD, ChatColor.GOLD + "Username", ChatColor.WHITE + username, false);
 		}
 
 		boolean isLongMessage = fullMessage.length() > 32;
 
 		String timestampToDate = translateTimestampToDate(Long.parseLong(getReportByKey(report, "Timestamp")));
 		ItemStack uuidItem = createInfoItem(Material.NAME_TAG, ChatColor.GOLD + "UUID", ChatColor.WHITE + uuid, false);
-		ItemStack worldItem = createInfoItem(Material.GRASS_BLOCK, ChatColor.GOLD + "World", ChatColor.WHITE + world, false);
+		ItemStack worldItem = createInfoItem(XMaterial.GRASS_BLOCK, ChatColor.GOLD + "World", ChatColor.WHITE + world, false);
 		ItemStack messageItem = createInfoItem(Material.PAPER, ChatColor.GOLD + "Full Message", ChatColor.WHITE + fullMessage, isLongMessage);
 		ItemStack serverNameItem = createInfoItem(Material.COMPASS, ChatColor.GOLD + "Server Name", ChatColor.WHITE + serverName, false);
 		ItemStack statusItem = null;
@@ -453,7 +454,7 @@ public class bugreportGUI {
 			}
 		}
 
-		ItemStack timestampItem = createInfoItem(Material.CLOCK, ChatColor.GOLD + "Timestamp", ChatColor.WHITE + timestampToDate, false);
+		ItemStack timestampItem = createInfoItem(XMaterial.CLOCK, ChatColor.GOLD + "Timestamp", ChatColor.WHITE + timestampToDate, false);
 		ItemStack locationItem = createInfoItem(Material.COMPASS, ChatColor.GOLD + locationTitle, ChatColor.WHITE + location, false);
 		ItemStack gamemodeItem = createInfoItem(Material.DIAMOND_SWORD, ChatColor.GOLD + "Gamemode", ChatColor.WHITE + gamemode, false);
 		ItemStack backButton = createButton(Material.BARRIER, ChatColor.RED + getValueFromLanguageFile("buttonNames.back", "Back"));

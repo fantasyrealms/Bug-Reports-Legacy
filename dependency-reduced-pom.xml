@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.leon.bugreport</groupId>
   <artifactId>BugReports</artifactId>
-  <version>0.12.3</version>
+  <version>0.12.3-Legacy</version>
   <build>
     <plugins>
       <plugin>
@@ -34,6 +34,10 @@
                     <exclude>**/io.netty.versions.properties</exclude>
                     <exclude>**/*.args</exclude>
                     <exclude>**/*.so</exclude>
+                    <exclude>com/cryptomorin/xseries/XBiome*</exclude>
+                    <exclude>com/cryptomorin/xseries/NMSExtras*</exclude>
+                    <exclude>com/cryptomorin/xseries/NoteBlockMusic*</exclude>
+                    <exclude>com/cryptomorin/xseries/SkullCacheListener*</exclude>
                   </excludes>
                 </filter>
               </filters>
@@ -41,11 +45,14 @@
           </execution>
         </executions>
         <configuration>
-          <outputDirectory>C:/Users/itsja/Downloads/Test Minecraft Server/plugins</outputDirectory>
           <relocations>
             <relocation>
               <pattern>org.bstats</pattern>
               <shadedPattern>com.leon.bugreport</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>com.cryptomorin.xseries</pattern>
+              <shadedPattern>com.leon.bugreport.xseries</shadedPattern>
             </relocation>
           </relocations>
           <minimizeJar>true</minimizeJar>

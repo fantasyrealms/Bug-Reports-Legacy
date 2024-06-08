@@ -1,5 +1,6 @@
 package com.leon.bugreport;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.leon.bugreport.discord.LinkDiscord;
 import com.leon.bugreport.extensions.PlanHook;
 import com.leon.bugreport.gui.BugReportConfirmationGUI;
@@ -355,6 +356,14 @@ public class BugReportManager implements Listener {
 		return item;
 	}
 
+	public static @NotNull ItemStack createButton(XMaterial material, String name) {
+		ItemStack item = material.parseItem();
+		ItemMeta meta = item.getItemMeta();
+		Objects.requireNonNull(meta).setDisplayName(name);
+		item.setItemMeta(meta);
+		return item;
+	}
+
 	private static void loadBugReports() {
 		bugReports = BugReportDatabase.loadBugReports();
 	}
@@ -422,7 +431,7 @@ public class BugReportManager implements Listener {
 	}
 
 	public static @NotNull ItemStack createEmptyItem() {
-		ItemStack item = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+		ItemStack item = XMaterial.GRAY_STAINED_GLASS_PANE.parseItem();
 		ItemMeta meta = item.getItemMeta();
 		Objects.requireNonNull(meta).setDisplayName(" ");
 		item.setItemMeta(meta);
@@ -432,6 +441,34 @@ public class BugReportManager implements Listener {
 
 	public static @NotNull ItemStack createInfoItem(Material material, String name, String value, @NotNull Boolean longMessage) {
 		ItemStack item = new ItemStack(material);
+		ItemMeta meta = item.getItemMeta();
+		Objects.requireNonNull(meta).setDisplayName(name);
+
+		if (longMessage) {
+			List<String> lore = new ArrayList<>();
+			String[] words = value.split(" ");
+			StringBuilder currentLine = new StringBuilder();
+			for (String word : words) {
+				if (currentLine.length() + word.length() > 30) {
+					lore.add(currentLine.toString());
+					currentLine = new StringBuilder();
+				}
+
+				currentLine.append(word).append(" ");
+			}
+
+			if (!currentLine.isEmpty()) lore.add(currentLine.toString());
+			meta.setLore(lore);
+		} else {
+			meta.setLore(Collections.singletonList(value));
+		}
+
+		item.setItemMeta(meta);
+		return item;
+	}
+
+	public static @NotNull ItemStack createInfoItem(XMaterial material, String name, String value, @NotNull Boolean longMessage) {
+		ItemStack item = material.parseItem();
 		ItemMeta meta = item.getItemMeta();
 		Objects.requireNonNull(meta).setDisplayName(name);
 
