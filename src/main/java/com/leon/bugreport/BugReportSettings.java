@@ -42,7 +42,7 @@ public class BugReportSettings {
 	public BugReportSettings() {
 	}
 
-	private static void setBorder(Inventory gui, Material borderMaterial) {
+	private static void setBorder(Inventory gui, XMaterial borderMaterial) {
 		IntStream.range(0, 9).forEach(i -> gui.setItem(i, createButton(borderMaterial, " ")));
 		IntStream.range(36, 45).forEach(i -> gui.setItem(i, createButton(borderMaterial, " ")));
 		IntStream.range(9, 36).filter(i -> i % 9 == 0 || i % 9 == 8).forEach(i -> gui.setItem(i, createButton(borderMaterial, " ")));
@@ -62,7 +62,7 @@ public class BugReportSettings {
 		ItemStack otherSettings = createButton(Material.BOOK, ChatColor.YELLOW + getValueFromLanguageFile("buttonNames.otherSettings", "Other Settings"));
 		ItemStack viewAllStatus = createButton(Material.BOOKSHELF, ChatColor.YELLOW + getValueFromLanguageFile("buttonNames.viewStatus", "View Status"));
 
-		setBorder(gui, Material.GRAY_STAINED_GLASS_PANE);
+		setBorder(gui, XMaterial.GRAY_STAINED_GLASS_PANE);
 
 		gui.setItem(10, setDiscordWebhook);
 		gui.setItem(11, setBugReportNotifications);
@@ -754,6 +754,11 @@ public class BugReportSettings {
 			return gui;
 		}
 
+		private XMaterial getXMaterialFromMap(@NotNull Map<?, ?> map, String key, XMaterial defaultMaterial) {
+			Object value = map.get(key);
+			return XMaterial.matchXMaterial((String) value).orElse(defaultMaterial);
+		}
+
 		private Material getMaterialFromMap(@NotNull Map<?, ?> map, String key, Material defaultMaterial) {
 			Object value = map.get(key);
 			return value != null ? Material.matchMaterial((String) value) : defaultMaterial;
@@ -764,9 +769,9 @@ public class BugReportSettings {
 			return value != null ? ChatColor.valueOf((String) value) : defaultColor;
 		}
 
-		private Material getStainedGlassPaneColor(@NotNull Map<?, ?> map) {
-			String color = map.get("color").toString().toUpperCase() + "_STAINED_GLASS_PANE";
-			return Material.matchMaterial(color) != null ? Material.valueOf(color) : Material.GRAY_STAINED_GLASS_PANE;
+		private XMaterial getStainedGlassPaneColor(@NotNull Map<?, ?> map) {
+			String color = map.get("colXor").toString().toUpperCase() + "_STAINED_GLASS_PANE";
+			return XMaterial.matchXMaterial(color).orElse(XMaterial.GRAY_STAINED_GLASS_PANE);
 		}
 
 		private void setItemMeta(@NotNull ItemStack item, @NotNull Map<?, ?> map, String key) {
