@@ -18,6 +18,14 @@ collected when a bug report is submitted is as follows:
 You can archive/unarchive/delete bug reports, customize the "Bug Report Details" GUI, customize all of the statuses,
 language selector and more!
 
+## About This Legacy Version
+
+This Legacy version focuses on support for 1.8.8,
+but it should work normally on the version originally supported,
+and that means there are some features not available on the Legacy version.
+
+- Bug Report Books
+
 ## Commands
 
 - bugreport <message> - **Adds a new bug report either via message or a GUI for the categories**.
