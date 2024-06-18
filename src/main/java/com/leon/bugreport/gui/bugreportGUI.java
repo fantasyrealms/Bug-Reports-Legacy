@@ -113,7 +113,7 @@ public class bugreportGUI {
 					int slot = Integer.parseInt(itemMap.get("slot").toString());
 					String bugReportItem = itemMap.get("bugReportItem").toString();
 					String materialKey = itemMap.get("material").toString();
-					Material material;
+					XMaterial material;
 					ItemStack itemStack;
 
 					if ((isArchivedGUI && bugReportItem.equals("BugReportArchive")) || (!isArchivedGUI && bugReportItem.equals("BugReportUnArchive"))) {
@@ -122,9 +122,9 @@ public class bugreportGUI {
 
 					if (materialKey.contains("[") && materialKey.contains("]")) {
 						String[] materials = materialKey.replaceAll("[\\[\\]]", "").split(",\\s*");
-						material = Material.valueOf(isArchivedGUI ? materials[1].trim() : materials[0].trim());
+						material = XMaterial.matchXMaterial(isArchivedGUI ? materials[1].trim() : materials[0].trim()).orElse(XMaterial.BARRIER);
 					} else {
-						material = Material.valueOf(materialKey);
+						material = XMaterial.matchXMaterial(materialKey).orElse(XMaterial.BARRIER);
 					}
 
 					Object textureObj = itemMap.get("texture");
@@ -225,7 +225,7 @@ public class bugreportGUI {
 		return true;
 	}
 
-	private static @NotNull ItemStack createItemForReportDetail(String bugReportItemKey, Material defaultMaterial, @Nullable String textureBase64, @NotNull Map<String, String> reportDetails, Boolean isArchivedGUI) {
+	private static @NotNull ItemStack createItemForReportDetail(String bugReportItemKey, XMaterial defaultMaterial, @Nullable String textureBase64, @NotNull Map<String, String> reportDetails, Boolean isArchivedGUI) {
 		String reportDetailKey = deriveReportDetailKey(bugReportItemKey);
 		var ref = new Object() {
 			String detailValue = reportDetails.getOrDefault(reportDetailKey, "N/A");
@@ -288,7 +288,7 @@ public class bugreportGUI {
 				}
 			}
 
-			item = new ItemStack(defaultMaterial, 1);
+			item = defaultMaterial.parseItem();
 			ItemMeta meta = item.getItemMeta();
 
 			if (meta != null) {
