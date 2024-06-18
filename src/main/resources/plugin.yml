@@ -3,7 +3,7 @@ version: 0.12.4
 main: com.leon.bugreport.BugReportPlugin
 api-version: 1.13
 author: ItsLeon15
-softdepend: [ PlaceholderAPI, Plan ]
+softdepend: [ PlaceholderAPI, Plan, NBTAPI ]
 
 permissions:
   bugreport.admin:
