@@ -119,42 +119,42 @@ reportCategories:
   - name: Plugin Bug
     id: 1
     description: Report a bug with a plugin
-    item: minecraft:book
+    item: book
     color: red
   - name: Server Bug
     id: 2
     description: Report a bug with the server
-    item: minecraft:emerald
+    item: emerald
     color: green
   - name: Resource Bug
     id: 3
     description: Report a bug with the resource pack
-    item: minecraft:map
+    item: map
     color: blue
   - name: Other
     id: 4
     description: Report something else
-    item: minecraft:paper
+    item: paper
     color: yellow
 
 statuses:
   - name: Open
     description: Report is open
-    icon: minecraft:green_dye
+    icon: green_dye
     color: GREEN
     id: 1
   - name: Archived
     description: Report is archived
-    icon: minecraft:red_dye
+    icon: red_dye
     color: RED
     id: 2
   - name: Pending
     description: Report is pending
-    icon: minecraft:yellow_dye
+    icon: yellow_dye
     color: YELLOW
     id: 3
   - name: Ignored
     description: Report is ignored
-    icon: minecraft:white_dye
+    icon: white_dye
     color: WHITE
     id: 4
