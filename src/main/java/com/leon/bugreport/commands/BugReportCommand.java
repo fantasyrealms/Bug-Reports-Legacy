@@ -1,7 +1,11 @@
 package com.leon.bugreport.commands;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.leon.bugreport.BugReportManager;
 import com.leon.bugreport.Category;
+import com.leon.bugreport.ItemUtil;
+import de.tr7zw.nbtapi.NBT;
+import de.tr7zw.nbtapi.iface.ReadWriteItemNBT;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -24,6 +28,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static com.leon.bugreport.API.ErrorClass.logErrorMessage;
 import static com.leon.bugreport.BugReportDatabase.getStaticUUID;
@@ -152,7 +158,7 @@ public class BugReportCommand implements CommandExecutor, Listener {
 					ItemStack[] contents = player.getInventory().getContents();
 					for (ItemStack item : contents) {
 						if (item != null && item.hasItemMeta() && item.getItemMeta() instanceof BookMeta meta) {
-							if (meta.hasCustomModelData() && meta.getCustomModelData() == 1889234213 && (item.getType() == Material.WRITTEN_BOOK || item.getType() == Material.WRITABLE_BOOK)) {
+							if (ItemUtil.hasCustomModelData(item) && ItemUtil.getCustomModelData(item) == 1889234213 && (item.getType() == XMaterial.WRITTEN_BOOK.parseMaterial() || item.getType() == XMaterial.WRITABLE_BOOK.parseMaterial())) {
 								player.getInventory().remove(item);
 								player.updateInventory();
 								doubleCheckIfBookWasRemoved(player);
@@ -180,7 +186,7 @@ public class BugReportCommand implements CommandExecutor, Listener {
 				ItemStack[] contents = player.getInventory().getContents();
 				for (ItemStack item : contents) {
 					if (item != null && item.hasItemMeta() && item.getItemMeta() instanceof BookMeta meta) {
-						if (meta.hasCustomModelData() && meta.getCustomModelData() == 1889234213 && (item.getType() == Material.WRITTEN_BOOK || item.getType() == Material.WRITABLE_BOOK)) {
+						if (ItemUtil.hasCustomModelData(item) && ItemUtil.getCustomModelData(item) == 1889234213 && (item.getType() == XMaterial.WRITTEN_BOOK.parseMaterial() || item.getType() == XMaterial.WRITABLE_BOOK.parseMaterial())) {
 							foundBook = true;
 							player.getInventory().remove(item);
 							player.updateInventory();
@@ -220,16 +226,19 @@ public class BugReportCommand implements CommandExecutor, Listener {
 
 		if (player.hasPermission("bugreport.use") || player.hasPermission("bugreport.admin")) {
 			if (config.getBoolean("enablePluginReportBook", true)) {
-				ItemStack bugReportBook = new ItemStack(Material.WRITABLE_BOOK);
+				ItemStack bugReportBook = XMaterial.WRITABLE_BOOK.parseItem();
 				BookMeta meta = (BookMeta) bugReportBook.getItemMeta();
 
 				if (meta != null) {
-					meta.setCustomModelData(1889234213);
+					if (XMaterial.supports(14))
+						meta.setCustomModelData(1889234213);
 					meta.setDisplayName(ChatColor.YELLOW + "Bug Report");
 					meta.setTitle("Bug Report");
 					meta.setAuthor(player.getName());
 					meta.addPage("Write your bug report here...");
 					bugReportBook.setItemMeta(meta);
+					if (XMaterial.getVersion() == 8)
+                        NBT.modify(bugReportBook, (Consumer<ReadWriteItemNBT>) nbt -> nbt.setInteger("modelData", 1889234213));
 				}
 
 				if (player.getInventory().firstEmpty() == -1) {

@@ -410,14 +410,14 @@ public class bugreportGUI {
 		boolean isLongMessage = fullMessage.length() > 32;
 
 		String timestampToDate = translateTimestampToDate(Long.parseLong(getReportByKey(report, "Timestamp")));
-		ItemStack uuidItem = createInfoItem(Material.NAME_TAG, ChatColor.GOLD + "UUID", ChatColor.WHITE + uuid, false);
+		ItemStack uuidItem = createInfoItem(XMaterial.NAME_TAG, ChatColor.GOLD + "UUID", ChatColor.WHITE + uuid, false);
 		ItemStack worldItem = createInfoItem(XMaterial.GRASS_BLOCK, ChatColor.GOLD + "World", ChatColor.WHITE + world, false);
-		ItemStack messageItem = createInfoItem(Material.PAPER, ChatColor.GOLD + "Full Message", ChatColor.WHITE + fullMessage, isLongMessage);
-		ItemStack serverNameItem = createInfoItem(Material.COMPASS, ChatColor.GOLD + "Server Name", ChatColor.WHITE + serverName, false);
+		ItemStack messageItem = createInfoItem(XMaterial.PAPER, ChatColor.GOLD + "Full Message", ChatColor.WHITE + fullMessage, isLongMessage);
+		ItemStack serverNameItem = createInfoItem(XMaterial.COMPASS, ChatColor.GOLD + "Server Name", ChatColor.WHITE + serverName, false);
 		ItemStack statusItem = null;
 
 		if (status == null) {
-			statusItem = createInfoItem(isArchivedGUI ? Material.RED_DYE : Material.LIME_DYE, ChatColor.GOLD + "Status (Click to change)", ChatColor.WHITE + (isArchivedGUI ? "Archived" : "Open"), false);
+			statusItem = createInfoItem(isArchivedGUI ? XMaterial.RED_DYE : XMaterial.LIME_DYE, ChatColor.GOLD + "Status (Click to change)", ChatColor.WHITE + (isArchivedGUI ? "Archived" : "Open"), false);
 		} else {
 			List<Map<?, ?>> statuses = config.getMapList("statuses");
 			boolean statusFound = false;
@@ -425,7 +425,7 @@ public class bugreportGUI {
 			for (Map<?, ?> statusMap : statuses) {
 				if (status.equals("0")) {
 					status = isArchivedGUI ? "Archived" : "Active";
-					Material stautsMaterial = isArchivedGUI ? Material.RED_DYE : Material.LIME_DYE;
+					XMaterial stautsMaterial = isArchivedGUI ? XMaterial.RED_DYE : XMaterial.LIME_DYE;
 					ChatColor statusChatColor = isArchivedGUI ? ChatColor.RED : ChatColor.GREEN;
 
 					statusItem = createInfoItem(stautsMaterial, statusChatColor + "Status (Click to change)", statusChatColor + status, false);
@@ -455,9 +455,9 @@ public class bugreportGUI {
 		}
 
 		ItemStack timestampItem = createInfoItem(XMaterial.CLOCK, ChatColor.GOLD + "Timestamp", ChatColor.WHITE + timestampToDate, false);
-		ItemStack locationItem = createInfoItem(Material.COMPASS, ChatColor.GOLD + locationTitle, ChatColor.WHITE + location, false);
-		ItemStack gamemodeItem = createInfoItem(Material.DIAMOND_SWORD, ChatColor.GOLD + "Gamemode", ChatColor.WHITE + gamemode, false);
-		ItemStack backButton = createButton(Material.BARRIER, ChatColor.RED + getValueFromLanguageFile("buttonNames.back", "Back"));
+		ItemStack locationItem = createInfoItem(XMaterial.COMPASS, ChatColor.GOLD + locationTitle, ChatColor.WHITE + location, false);
+		ItemStack gamemodeItem = createInfoItem(XMaterial.DIAMOND_SWORD, ChatColor.GOLD + "Gamemode", ChatColor.WHITE + gamemode, false);
+		ItemStack backButton = createButton(XMaterial.BARRIER, ChatColor.RED + getValueFromLanguageFile("buttonNames.back", "Back"));
 		ItemStack archiveButton = createCustomPlayerHead(guiTextures.archiveTexture, ChatColor.YELLOW + getValueFromLanguageFile("buttonNames.archive", "Archive"), 16);
 		ItemStack unarchiveButton = createCustomPlayerHead(guiTextures.unarchiveTexture, ChatColor.YELLOW + getValueFromLanguageFile("buttonNames.unarchive", "Unarchive"), 17);
 		ItemStack deleteButton = createCustomPlayerHead(guiTextures.deleteTexture, ChatColor.YELLOW + getValueFromLanguageFile("buttonNames.delete", "Delete"), 18);

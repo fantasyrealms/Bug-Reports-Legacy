@@ -1,10 +1,13 @@
 package com.leon.bugreport;
 
 import com.cryptomorin.xseries.SkullUtils;
+import com.cryptomorin.xseries.XItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.leon.bugreport.keys.guiTextures;
+import de.tr7zw.nbtapi.NBT;
+import de.tr7zw.nbtapi.iface.ReadableItemNBT;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -26,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 
 import static com.leon.bugreport.API.ErrorClass.logErrorMessage;
@@ -54,13 +58,13 @@ public class BugReportSettings {
 		ItemStack setDiscordWebhook = createCustomPlayerHead(guiTextures.setDiscordWebhookTexture, getValueFromLanguageFile("buttonNames.enableDiscordWebhook", "Enable Discord Webhook"), 1);
 		ItemStack setLanguage = createCustomPlayerHead(guiTextures.setLanguageTexture, getValueFromLanguageFile("buttonNames.setLanguage", "Set Language"), 2);
 
-		ItemStack maxReportsPerPlayer = createButton(Material.PAPER, ChatColor.YELLOW + getValueFromLanguageFile("buttonNames.setMaxReportsPerPlayer", "Set Max Reports Per Player"));
-		ItemStack toggleCategorySelection = createButton(Material.CHEST, ChatColor.YELLOW + getValueFromLanguageFile("buttonNames.enableCategorySelection", "Enable Category Selection"));
-		ItemStack setBugReportNotifications = createButton(Material.BELL, ChatColor.YELLOW + getValueFromLanguageFile("buttonNames.enableBugReportNotifications", "Enable Bug Report Notifications"));
-		ItemStack onIcon = createButton(Material.LIME_DYE, ChatColor.GREEN + getValueFromLanguageFile("buttonNames.true", "On"));
-		ItemStack offIcon = createButton(Material.GRAY_DYE, ChatColor.RED + getValueFromLanguageFile("buttonNames.false", "Off"));
-		ItemStack otherSettings = createButton(Material.BOOK, ChatColor.YELLOW + getValueFromLanguageFile("buttonNames.otherSettings", "Other Settings"));
-		ItemStack viewAllStatus = createButton(Material.BOOKSHELF, ChatColor.YELLOW + getValueFromLanguageFile("buttonNames.viewStatus", "View Status"));
+		ItemStack maxReportsPerPlayer = createButton(XMaterial.PAPER, ChatColor.YELLOW + getValueFromLanguageFile("buttonNames.setMaxReportsPerPlayer", "Set Max Reports Per Player"));
+		ItemStack toggleCategorySelection = createButton(XMaterial.CHEST, ChatColor.YELLOW + getValueFromLanguageFile("buttonNames.enableCategorySelection", "Enable Category Selection"));
+		ItemStack setBugReportNotifications = createButton(XMaterial.BELL.or(XMaterial.YELLOW_BANNER), ChatColor.YELLOW + getValueFromLanguageFile("buttonNames.enableBugReportNotifications", "Enable Bug Report Notifications"));
+		ItemStack onIcon = createButton(XMaterial.LIME_DYE, ChatColor.GREEN + getValueFromLanguageFile("buttonNames.true", "On"));
+		ItemStack offIcon = createButton(XMaterial.GRAY_DYE, ChatColor.RED + getValueFromLanguageFile("buttonNames.false", "Off"));
+		ItemStack otherSettings = createButton(XMaterial.BOOK, ChatColor.YELLOW + getValueFromLanguageFile("buttonNames.otherSettings", "Other Settings"));
+		ItemStack viewAllStatus = createButton(XMaterial.BOOKSHELF, ChatColor.YELLOW + getValueFromLanguageFile("buttonNames.viewStatus", "View Status"));
 
 		setBorder(gui, XMaterial.GRAY_STAINED_GLASS_PANE);
 
@@ -226,6 +230,9 @@ public class BugReportSettings {
                 skullMeta.setDisplayName((nameColor != null ? nameColor : ChatColor.YELLOW) + name);
                 if (XMaterial.supports(14)) skullMeta.setCustomModelData(modelData);
                 playerHead.setItemMeta(skullMeta);
+				if (XMaterial.getVersion() == 8) NBT.modify(playerHead, nbt -> {
+					nbt.setInteger("modelData", modelData);
+				});
 
                 if (debugMode) {
                     plugin.getLogger().info("Custom player head created successfully.");
@@ -254,7 +261,7 @@ public class BugReportSettings {
 			ChatColor.valueOf(statusMap.get("color").toString().toUpperCase());
 			ChatColor newStatusColor = ChatColor.valueOf(((String) statusMap.get("color")).toUpperCase());
 
-			Material newStatusIcon = Material.matchMaterial((String) statusMap.get("icon")) != null ? Material.matchMaterial((String) statusMap.get("icon")) : Material.BARRIER;
+			XMaterial newStatusIcon = XMaterial.matchXMaterial((String) statusMap.get("icon")).orElse(XMaterial.BARRIER);
 
 			ItemStack statusItem = createButton(newStatusIcon, newStatusColor + statusName);
 			ItemMeta statusItemMeta = statusItem.getItemMeta();
@@ -408,10 +415,10 @@ public class BugReportSettings {
 					return;
 				}
 
-				if (clickedItem.getItemMeta().hasCustomModelData()) {
-					if (clickedItem.getItemMeta().getCustomModelData() == 1) {
+				if (ItemUtil.hasCustomModelData(clickedItem)) {
+					if (ItemUtil.getCustomModelData(clickedItem) == 1) {
 						setDiscordWebhookToggle(player);
-					} else if (clickedItem.getItemMeta().getCustomModelData() == 2) {
+					} else if (ItemUtil.getCustomModelData(clickedItem) == 2) {
 						setLanguageToggle(player);
 					}
 				}
@@ -465,8 +472,8 @@ public class BugReportSettings {
 					return;
 				}
 
-				if (clickedItem.getItemMeta().hasCustomModelData()) {
-					int customModelData = clickedItem.getItemMeta().getCustomModelData();
+				if (ItemUtil.hasCustomModelData(clickedItem)) {
+					int customModelData = ItemUtil.getCustomModelData(clickedItem);
 					playButtonClickSound(player);
 
 					switch (customModelData) {
@@ -704,7 +711,7 @@ public class BugReportSettings {
 
 						String statusColorString = ((String) statusMap.get("color")).toUpperCase();
 						ChatColor statusColor = ChatColor.valueOf(statusColorString);
-						Material statusIcon = Material.matchMaterial((String) statusMap.get("icon")) != null ? Material.matchMaterial((String) statusMap.get("icon")) : Material.BARRIER;
+						XMaterial statusIcon = XMaterial.matchXMaterial((String) statusMap.get("icon")).orElse(XMaterial.BARRIER);
 
 						ItemStack statusItem = createButton(statusIcon, statusColor + statusName);
 						ItemMeta statusMeta = statusItem.getItemMeta();
@@ -784,16 +791,16 @@ public class BugReportSettings {
 			Inventory gui = Bukkit.createInventory(null, 45, ChatColor.YELLOW + "Bug Report - " + getValueFromLanguageFile("buttonNames.otherSettings", "Other Settings"));
 
 			for (int i = 0; i < 9; i++) {
-				gui.setItem(i, createButton(Material.GRAY_STAINED_GLASS_PANE, " "));
+				gui.setItem(i, createButton(XMaterial.GRAY_STAINED_GLASS_PANE, " "));
 			}
 
 			for (int i = 36; i < 45; i++) {
-				gui.setItem(i, createButton(Material.GRAY_STAINED_GLASS_PANE, " "));
+				gui.setItem(i, createButton(XMaterial.GRAY_STAINED_GLASS_PANE, " "));
 			}
 
 			for (int i = 9; i < 36; i++) {
 				if (i % 9 == 0 || i % 9 == 8) {
-					gui.setItem(i, createButton(Material.GRAY_STAINED_GLASS_PANE, " "));
+					gui.setItem(i, createButton(XMaterial.GRAY_STAINED_GLASS_PANE, " "));
 				}
 			}
 
@@ -829,7 +836,7 @@ public class BugReportSettings {
 			if (debugMode) {
 				plugin.getLogger().info("Title message set to " + !toggle);
 			}
-			player.getOpenInventory().setItem(19, getTitleMessage() ? createButton(Material.LIME_DYE, ChatColor.GREEN + getValueFromLanguageFile("buttonNames.true", "On")) : createButton(Material.GRAY_DYE, ChatColor.RED + getValueFromLanguageFile("buttonNames.false", "Off")));
+			player.getOpenInventory().setItem(19, getTitleMessage() ? createButton(XMaterial.LIME_DYE, ChatColor.GREEN + getValueFromLanguageFile("buttonNames.true", "On")) : createButton(XMaterial.GRAY_DYE, ChatColor.RED + getValueFromLanguageFile("buttonNames.false", "Off")));
 		}
 
 		private boolean getPlayerHead() {
@@ -845,7 +852,7 @@ public class BugReportSettings {
 			if (debugMode) {
 				plugin.getLogger().info("Player heads set to " + !toggle);
 			}
-			player.getOpenInventory().setItem(20, getPlayerHead() ? createButton(Material.LIME_DYE, ChatColor.GREEN + getValueFromLanguageFile("buttonNames.true", "On")) : createButton(Material.GRAY_DYE, ChatColor.RED + getValueFromLanguageFile("buttonNames.false", "Off")));
+			player.getOpenInventory().setItem(20, getPlayerHead() ? createButton(XMaterial.LIME_DYE, ChatColor.GREEN + getValueFromLanguageFile("buttonNames.true", "On")) : createButton(Material.GRAY_DYE, ChatColor.RED + getValueFromLanguageFile("buttonNames.false", "Off")));
 		}
 
 		private boolean getReportBook() {
@@ -861,7 +868,7 @@ public class BugReportSettings {
 			if (debugMode) {
 				plugin.getLogger().info("Report book set to " + !toggle);
 			}
-			player.getOpenInventory().setItem(21, getReportBook() ? createButton(Material.LIME_DYE, ChatColor.GREEN + getValueFromLanguageFile("buttonNames.true", "On")) : createButton(Material.GRAY_DYE, ChatColor.RED + getValueFromLanguageFile("buttonNames.false", "Off")));
+			player.getOpenInventory().setItem(21, getReportBook() ? createButton(XMaterial.LIME_DYE, ChatColor.GREEN + getValueFromLanguageFile("buttonNames.true", "On")) : createButton(XMaterial.GRAY_DYE, ChatColor.RED + getValueFromLanguageFile("buttonNames.false", "Off")));
 		}
 
 		private void handleCancel(Player player, @NotNull Map<UUID, String> clickMap) {
