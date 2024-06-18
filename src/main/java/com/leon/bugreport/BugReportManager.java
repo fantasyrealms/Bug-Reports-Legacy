@@ -37,7 +37,7 @@ import java.util.*;
 import static com.leon.bugreport.API.DataSource.getPlayerHead;
 import static com.leon.bugreport.API.ErrorClass.logErrorMessage;
 import static com.leon.bugreport.BugReportDatabase.getStaticUUID;
-import static com.leon.bugreport.BugReportLanguage.getEnglishValueFromValue;
+import static com.leon.bugreport.BugReportLanguage.getKeyFromTranslation;
 import static com.leon.bugreport.BugReportLanguage.getValueFromLanguageFile;
 import static com.leon.bugreport.BugReportSettings.getSettingsGUI;
 import static com.leon.bugreport.commands.BugReportCommand.getChatColorByCode;
@@ -60,7 +60,7 @@ public class BugReportManager implements Listener {
 	private final List<Category> reportCategories;
 	private final LinkDiscord discord;
 
-	public BugReportManager(Plugin plugin) throws Exception {
+	public BugReportManager(Plugin plugin) {
 		BugReportManager.plugin = plugin;
 		bugReports = new HashMap<>();
 		database = new BugReportDatabase();
@@ -168,7 +168,7 @@ public class BugReportManager implements Listener {
 				put("update-checker-join", true);
 				put("discordEmbedColor", "Yellow");
 				put("discordEmbedTitle", "New Bug Report");
-				put("discordEmbedFooter", "Bug Report V0.12.3");
+				put("discordEmbedFooter", "Bug Report V0.12.4");
 				put("discordEmbedThumbnail", "https://www.spigotmc.org/data/resource_icons/110/110732.jpg");
 				put("discordEnableThumbnail", true);
 				put("discordEnableUserAuthor", true);
@@ -421,7 +421,8 @@ public class BugReportManager implements Listener {
 		return new StringJoiner(" ").add(calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH)).add(day + daySuffix + ",").add(String.valueOf(calendar.get(Calendar.YEAR))).add("at").add(hourString + ":" + minuteString).add(amPm).toString();
 	}
 
-	private static String getDayOfMonthSuffix(int day) {
+	@Contract(pure = true)
+	private static @NotNull String getDayOfMonthSuffix(int day) {
 		return switch (day) {
 			case 1, 21, 31 -> "st";
 			case 2, 22 -> "nd";
@@ -658,10 +659,9 @@ public class BugReportManager implements Listener {
 
 			String displayName = itemMeta.getDisplayName();
 			String cleanedDisplayName = ChatColor.stripColor(displayName);
-			String customDisplayName = getEnglishValueFromValue(displayName);
 
 			if (debugMode) {
-				plugin.getLogger().info("Clicked item: " + customDisplayName);
+				plugin.getLogger().info("Clicked item: " + cleanedDisplayName);
 			}
 
 			if (cleanedDisplayName.startsWith("Bug Report #")) {
@@ -678,8 +678,13 @@ public class BugReportManager implements Listener {
 				return;
 			}
 
-			switch (Objects.requireNonNull(customDisplayName)) {
-				case "Back" -> {
+			String customDisplayName = getKeyFromTranslation(displayName);
+			if (customDisplayName == null || customDisplayName.equals(" ")) {
+				return;
+			}
+
+			switch (customDisplayName) {
+				case "buttonNames.back" -> {
 					int currentPage = getCurrentPage(player);
 					if (currentPage > 1) {
 						if (TitleText.startsWith("Bug Report Details - ")) {
@@ -693,7 +698,7 @@ public class BugReportManager implements Listener {
 						}
 					}
 				}
-				case "Forward" -> {
+				case "buttonNames.forward" -> {
 					int currentPage = getCurrentPage(player);
 					if (currentPage < getTotalPages()) {
 						setCurrentPage(player, currentPage + 1);
@@ -702,11 +707,11 @@ public class BugReportManager implements Listener {
 						player.openInventory(isArchivedGUI ? getArchivedBugReportsGUI(localCurrentPage, player) : getBugReportGUI(localCurrentPage, player));
 					}
 				}
-				case "Settings" -> {
+				case "buttonNames.settings" -> {
 					player.openInventory(getSettingsGUI());
 					playButtonClickSound(player);
 				}
-				case "Close" -> {
+				case "buttonNames.close" -> {
 					closingInventoryMap.put(player.getUniqueId(), true);
 					playButtonClickSound(player);
 					player.closeInventory();
@@ -761,22 +766,17 @@ public class BugReportManager implements Listener {
 			}
 
 			String itemName = itemMeta.getDisplayName();
-			String customDisplayName = getEnglishValueFromValue(itemName);
 
 			if (debugMode) {
-				plugin.getLogger().info("Clicked item: " + customDisplayName);
+				plugin.getLogger().info("Clicked item: " + ChatColor.stripColor(itemName));
 			}
 
-			if (customDisplayName == null || customDisplayName.equals(" ")) {
-				return;
-			}
-
-			if (customDisplayName.contains("(Click to change)")) {
+			if (itemName.contains("(Click to change)")) {
 				playButtonClickSound(player);
 				player.openInventory(BugReportSettings.getStatusSelectionGUI(reportIDGUI));
 			}
 
-			if (customDisplayName.contains("(Click to teleport)")) {
+			if (itemName.contains("(Click to teleport)")) {
 				playButtonClickSound(player);
 				if (debugMode) {
 					plugin.getLogger().info("Teleporting to the location of bug report #" + reportIDGUI + "...");
@@ -797,12 +797,17 @@ public class BugReportManager implements Listener {
 				}
 			}
 
+			String customDisplayName = getKeyFromTranslation(itemName);
+			if (customDisplayName == null || customDisplayName.equals(" ")) {
+				return;
+			}
+
 			switch (customDisplayName) {
-				case "Back" -> {
+				case "buttonNames.back" -> {
 					playButtonClickSound(player);
 					player.openInventory(isArchivedDetails ? getArchivedBugReportsGUI(localCurrentPage, player) : getBugReportGUI(localCurrentPage, player));
 				}
-				case "Unarchive" -> {
+				case "buttonNames.unarchive" -> {
 					playButtonClickSound(player);
 					BugReportDatabase.updateBugReportArchive(reportIDGUI, 0);
 
@@ -814,7 +819,7 @@ public class BugReportManager implements Listener {
 
 					HandlerList.unregisterAll(this);
 				}
-				case "Archive" -> {
+				case "buttonNames.archive" -> {
 					if (player.hasPermission("bugreport.archive") || player.hasPermission("bugreport.admin")) {
 						playButtonClickSound(player);
 
@@ -828,7 +833,7 @@ public class BugReportManager implements Listener {
 						player.sendMessage(returnStartingMessage(ChatColor.RED) + " You don't have permission to archive bug reports!");
 					}
 				}
-				case "Delete" -> {
+				case "buttonNames.delete" -> {
 					if (player.hasPermission("bugreport.delete") || player.hasPermission("bugreport.admin")) {
 						playButtonClickSound(player);
 
