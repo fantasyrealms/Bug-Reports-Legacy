@@ -277,7 +277,7 @@ public class bugreportGUI {
 						String statusDescription = statusMap.get("description").toString();
 
 						ChatColor statusColor = ChatColor.valueOf(statusMap.get("color").toString().toUpperCase());
-						Material statusIcon = Material.matchMaterial((String) statusMap.get("icon")) != null ? Material.matchMaterial((String) statusMap.get("icon")) : Material.BARRIER;
+						XMaterial statusIcon = XMaterial.matchXMaterial((String) statusMap.get("icon")).orElse(XMaterial.BARRIER);
 						statusItem = createInfoItem(statusIcon, statusColor + statusName + " (Click to change)", statusColor + statusDescription, false);
 
 						if (bugReportItemKey.equals("BugReportStatus")) {

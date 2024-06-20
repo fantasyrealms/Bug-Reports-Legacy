@@ -808,7 +808,7 @@ public class BugReportSettings {
 
 						String statusColorString = ((String) statusMap.get("color")).toUpperCase();
 						ChatColor statusColor = ChatColor.valueOf(statusColorString);
-						Material statusIcon = Material.matchMaterial((String) statusMap.get("icon")) != null ? Material.matchMaterial((String) statusMap.get("icon")) : Material.BARRIER;
+						XMaterial statusIcon = XMaterial.matchXMaterial((String) statusMap.get("icon")).orElse(XMaterial.BARRIER);
 
 						ItemStack statusItem = createButton(statusIcon, statusColor + statusName);
 						ItemMeta statusMeta = statusItem.getItemMeta();
@@ -897,7 +897,7 @@ public class BugReportSettings {
 
 			for (int i = 9; i < 36; i++) {
 				if (i % 9 == 0 || i % 9 == 8) {
-					gui.setItem(i, createButton(Material.GRAY_STAINED_GLASS_PANE, " "));
+					gui.setItem(i, createButton(XMaterial.GRAY_STAINED_GLASS_PANE, " "));
 				}
 			}
 
