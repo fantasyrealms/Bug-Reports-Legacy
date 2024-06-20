@@ -1,13 +1,11 @@
 package com.leon.bugreport;
 
 import com.cryptomorin.xseries.SkullUtils;
-import com.cryptomorin.xseries.XItemStack;
 import com.cryptomorin.xseries.XMaterial;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.leon.bugreport.keys.guiTextures;
 import de.tr7zw.nbtapi.NBT;
-import de.tr7zw.nbtapi.iface.ReadableItemNBT;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -21,6 +19,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.profile.PlayerProfile;
 import org.bukkit.profile.PlayerTextures;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -30,7 +30,6 @@ import java.io.Serial;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.IntStream;
 
 import static com.leon.bugreport.API.ErrorClass.logErrorMessage;
@@ -80,7 +79,7 @@ public class BugReportSettings {
 		player.setMetadata("currentLanguagePage", new FixedMetadataValue(plugin, page));
 	}
 
-	private static void setBorder(Inventory gui, Material borderMaterial) {
+	private static void setBorder(Inventory gui, XMaterial borderMaterial) {
 		IntStream.range(0, 9).forEach(i -> gui.setItem(i, createButton(borderMaterial, " ")));
 		IntStream.range(36, 45).forEach(i -> gui.setItem(i, createButton(borderMaterial, " ")));
 		IntStream.range(9, 36).filter(i -> i % 9 == 0 || i % 9 == 8).forEach(i -> gui.setItem(i, createButton(borderMaterial, " ")));
@@ -196,7 +195,7 @@ public class BugReportSettings {
 
 		Inventory gui = Bukkit.createInventory(null, 45, ChatColor.YELLOW + "Bug Report - " + getValueFromLanguageFile("buttonNames.language", "Language"));
 
-		setBorder(gui, Material.GRAY_STAINED_GLASS_PANE);
+		setBorder(gui, XMaterial.GRAY_STAINED_GLASS_PANE);
 
 		int maxLanguagesPerPage = 7;
 		int start = (page - 1) * maxLanguagesPerPage;
