@@ -26,6 +26,11 @@ and that means there are some features not available on the Legacy version.
 
 - Bug Report Books
 
+> [!IMPORTANT]
+> Remember
+> to install [NBTAPI](https://www.spigotmc.org/resources/nbt-api.7939/)
+> if you're planning to use in the legacy server version < 1.13
+
 ## Commands
 
 - bugreport <message> - **Adds a new bug report either via message or a GUI for the categories**.
