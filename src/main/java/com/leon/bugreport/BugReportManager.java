@@ -787,7 +787,7 @@ public class BugReportManager implements Listener {
 				}
 
 				if (checkForKey("useTitleInsteadOfMessage", true)) {
-					player.sendTitle(returnStartingMessage(ChatColor.GREEN) + " Teleporting to the location of Bug Report #" + reportIDGUI + "." + "." + ".", " ", 10, 70, 20);
+					Util.sendTitle(player, returnStartingMessage(ChatColor.GREEN) + " Teleporting to the location of Bug Report #" + reportIDGUI + "." + "." + ".", " ", 10, 70, 20);
 				} else {
 					player.sendMessage(returnStartingMessage(ChatColor.GREEN) + " Teleporting to the location of Bug Report #" + reportIDGUI + ".");
 				}

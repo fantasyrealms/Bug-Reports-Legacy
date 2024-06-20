@@ -3,7 +3,7 @@ package com.leon.bugreport.commands;
 import com.cryptomorin.xseries.XMaterial;
 import com.leon.bugreport.BugReportManager;
 import com.leon.bugreport.Category;
-import com.leon.bugreport.ItemUtil;
+import com.leon.bugreport.Util;
 import de.tr7zw.nbtapi.NBT;
 import de.tr7zw.nbtapi.iface.ReadWriteItemNBT;
 import org.bukkit.Bukkit;
@@ -29,7 +29,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static com.leon.bugreport.API.ErrorClass.logErrorMessage;
 import static com.leon.bugreport.BugReportDatabase.getStaticUUID;
@@ -158,7 +157,7 @@ public class BugReportCommand implements CommandExecutor, Listener {
 					ItemStack[] contents = player.getInventory().getContents();
 					for (ItemStack item : contents) {
 						if (item != null && item.hasItemMeta() && item.getItemMeta() instanceof BookMeta meta) {
-							if (ItemUtil.hasCustomModelData(item) && ItemUtil.getCustomModelData(item) == 1889234213 && (item.getType() == XMaterial.WRITTEN_BOOK.parseMaterial() || item.getType() == XMaterial.WRITABLE_BOOK.parseMaterial())) {
+							if (Util.hasCustomModelData(item) && Util.getCustomModelData(item) == 1889234213 && (item.getType() == XMaterial.WRITTEN_BOOK.parseMaterial() || item.getType() == XMaterial.WRITABLE_BOOK.parseMaterial())) {
 								player.getInventory().remove(item);
 								player.updateInventory();
 								doubleCheckIfBookWasRemoved(player);
@@ -186,7 +185,7 @@ public class BugReportCommand implements CommandExecutor, Listener {
 				ItemStack[] contents = player.getInventory().getContents();
 				for (ItemStack item : contents) {
 					if (item != null && item.hasItemMeta() && item.getItemMeta() instanceof BookMeta meta) {
-						if (ItemUtil.hasCustomModelData(item) && ItemUtil.getCustomModelData(item) == 1889234213 && (item.getType() == XMaterial.WRITTEN_BOOK.parseMaterial() || item.getType() == XMaterial.WRITABLE_BOOK.parseMaterial())) {
+						if (Util.hasCustomModelData(item) && Util.getCustomModelData(item) == 1889234213 && (item.getType() == XMaterial.WRITTEN_BOOK.parseMaterial() || item.getType() == XMaterial.WRITABLE_BOOK.parseMaterial())) {
 							foundBook = true;
 							player.getInventory().remove(item);
 							player.updateInventory();
@@ -273,7 +272,7 @@ public class BugReportCommand implements CommandExecutor, Listener {
 				int reportsLeft = maxReports - getReportCount(player.getUniqueId());
 				if (reportsLeft <= 0) {
 					if (checkForKey("useTitleInsteadOfMessage", true)) {
-						player.sendTitle(RED + getValueFromLanguageFile("maxReportsPerPlayerMessage", "You have reached the maximum amount of reports you can submit"), "", 10, 70, 25);
+						Util.sendTitle(player, RED + getValueFromLanguageFile("maxReportsPerPlayerMessage", "You have reached the maximum amount of reports you can submit"), "", 10, 70, 25);
 					} else {
 						player.sendMessage(returnStartingMessage(ChatColor.RED) + getValueFromLanguageFile("maxReportsPerPlayerMessage", "You have reached the maximum amount of reports you can submit"));
 					}
@@ -290,7 +289,7 @@ public class BugReportCommand implements CommandExecutor, Listener {
 			}
 
 			if (checkForKey("useTitleInsteadOfMessage", true)) {
-				player.sendTitle(GREEN + getValueFromLanguageFile("bugReportConfirmationMessage", "Bug report submitted successfully!"), "", 10, 70, 25);
+				Util.sendTitle(player, GREEN + getValueFromLanguageFile("bugReportConfirmationMessage", "Bug report submitted successfully!"), "", 10, 70, 25);
 			} else {
 				player.sendMessage(returnStartingMessage(ChatColor.GREEN) + getValueFromLanguageFile("bugReportConfirmationMessage", "Bug report submitted successfully!"));
 			}
@@ -368,7 +367,7 @@ public class BugReportCommand implements CommandExecutor, Listener {
 			categorySelectionMap.put(player.getUniqueId(), selectedCategory.getId());
 			player.closeInventory();
 			if (checkForKey("useTitleInsteadOfMessage", true)) {
-				player.sendTitle(YELLOW + getValueFromLanguageFile("enterBugReportMessageCategory", "Please enter your bug report in chat. Type 'cancel' to cancel"), "", 10, 70, 120);
+				Util.sendTitle(player, YELLOW + getValueFromLanguageFile("enterBugReportMessageCategory", "Please enter your bug report in chat. Type 'cancel' to cancel"), "", 10, 70, 120);
 			} else {
 				player.sendMessage(returnStartingMessage(ChatColor.YELLOW) + getValueFromLanguageFile("enterBugReportMessageCategory", "Please enter your bug report in chat. Type 'cancel' to cancel"));
 			}
@@ -392,7 +391,7 @@ public class BugReportCommand implements CommandExecutor, Listener {
 
 		if (message.equalsIgnoreCase("cancel")) {
 			if (checkForKey("useTitleInsteadOfMessage", true)) {
-				player.sendTitle(RED + getValueFromLanguageFile("cancelledBugReportMessage", "Bug report cancelled"), "", 10, 70, 25);
+				Util.sendTitle(player, RED + getValueFromLanguageFile("cancelledBugReportMessage", "Bug report cancelled"), "", 10, 70, 25);
 			} else {
 				player.sendMessage(returnStartingMessage(ChatColor.RED) + getValueFromLanguageFile("cancelledBugReportMessage", "Bug report cancelled"));
 			}
@@ -401,7 +400,7 @@ public class BugReportCommand implements CommandExecutor, Listener {
 
 		reportManager.submitBugReport(player, message, categoryId);
 		if (checkForKey("useTitleInsteadOfMessage", true)) {
-			player.sendTitle(GREEN + getValueFromLanguageFile("bugReportConfirmationMessage", "Bug report submitted successfully!"), "", 10, 70, 25);
+			Util.sendTitle(player, GREEN + getValueFromLanguageFile("bugReportConfirmationMessage", "Bug report submitted successfully!"), "", 10, 70, 25);
 		} else {
 			player.sendMessage(returnStartingMessage(ChatColor.GREEN) + getValueFromLanguageFile("bugReportConfirmationMessage", "Bug report submitted successfully!"));
 		}

@@ -370,7 +370,7 @@ public class BugReportSettings {
 		private static void setLanguage(String languageCode, String languageName, @NotNull Player player) {
 			player.closeInventory();
 			if (checkForKey("useTitleInsteadOfMessage", true)) {
-				player.sendTitle(returnStartingMessage(ChatColor.GREEN),
+				Util.sendTitle(player, returnStartingMessage(ChatColor.GREEN),
 						getValueFromLanguageFile("languageSetTo", "Language set to %language%")
 								.replace("%language%", languageName), 10, 70, 20);
 			} else {
@@ -492,10 +492,10 @@ public class BugReportSettings {
 					return;
 				}
 
-				if (ItemUtil.hasCustomModelData(clickedItem)) {
-					if (ItemUtil.getCustomModelData(clickedItem) == 1) {
+				if (Util.hasCustomModelData(clickedItem)) {
+					if (Util.getCustomModelData(clickedItem) == 1) {
 						setDiscordWebhookToggle(player);
-					} else if (ItemUtil.getCustomModelData(clickedItem) == 2) {
+					} else if (Util.getCustomModelData(clickedItem) == 2) {
 						setLanguageToggle(player);
 					}
 				}
@@ -508,7 +508,7 @@ public class BugReportSettings {
 
 						player.closeInventory();
 						if (config.getBoolean("useTitleInsteadOfMessage")) {
-							player.sendTitle(returnStartingMessage(ChatColor.YELLOW), getValueFromLanguageFile("enterMaxReportsPerPlayer", "Enter the max reports a player can submit. Or type 'cancel' to cancel"), 10, 70, 20);
+							Util.sendTitle(player, returnStartingMessage(ChatColor.YELLOW), getValueFromLanguageFile("enterMaxReportsPerPlayer", "Enter the max reports a player can submit. Or type 'cancel' to cancel"), 10, 70, 20);
 						} else {
 							player.sendMessage(returnStartingMessage(ChatColor.YELLOW) + getValueFromLanguageFile("enterMaxReportsPerPlayer", "Enter the max reports a player can submit. Or type 'cancel' to cancel"));
 						}
@@ -549,8 +549,8 @@ public class BugReportSettings {
 					return;
 				}
 
-				if (ItemUtil.hasCustomModelData(clickedItem)) {
-					int customModelData = ItemUtil.getCustomModelData(clickedItem);
+				if (Util.hasCustomModelData(clickedItem)) {
+					int customModelData = Util.getCustomModelData(clickedItem);
 					playButtonClickSound(player);
 
 					switch (customModelData) {
@@ -983,7 +983,7 @@ public class BugReportSettings {
 			}
 
 			if (checkForKey("useTitleInsteadOfMessage", true)) {
-				player.sendTitle(returnStartingMessage(ChatColor.GREEN), message, 10, 70, 20);
+				Util.sendTitle(player, returnStartingMessage(ChatColor.GREEN), message, 10, 70, 20);
 			} else {
 				player.sendMessage(returnStartingMessage(ChatColor.GREEN) + message);
 			}
@@ -1028,7 +1028,7 @@ public class BugReportSettings {
 									maxReports = Integer.parseInt(value);
 								} catch (NumberFormatException e) {
 									if (checkForKey("useTitleInsteadOfMessage", true)) {
-										player.sendTitle(returnStartingMessage(ChatColor.RED), getValueFromLanguageFile("enterValidNumber", "Please enter a valid number"), 10, 70, 20);
+										Util.sendTitle(player, returnStartingMessage(ChatColor.RED), getValueFromLanguageFile("enterValidNumber", "Please enter a valid number"), 10, 70, 20);
 									} else {
 										player.sendMessage(returnStartingMessage(ChatColor.RED) + getValueFromLanguageFile("enterValidNumber", "Please enter a valid number"));
 									}
@@ -1037,7 +1037,7 @@ public class BugReportSettings {
 								config.set("max-reports-per-player", maxReports);
 								saveConfig();
 								if (checkForKey("useTitleInsteadOfMessage", true)) {
-									player.sendTitle(returnStartingMessage(ChatColor.GREEN), getValueFromLanguageFile("maxReportsPerPlayerSuccessMessage", "Max reports per player has been set to %amount%").replace("%amount%", String.valueOf(maxReports)), 10, 70, 20);
+									Util.sendTitle(player, returnStartingMessage(ChatColor.GREEN), getValueFromLanguageFile("maxReportsPerPlayerSuccessMessage", "Max reports per player has been set to %amount%").replace("%amount%", String.valueOf(maxReports)), 10, 70, 20);
 								} else {
 									player.sendMessage(returnStartingMessage(ChatColor.GREEN)
 											+ getValueFromLanguageFile("maxReportsPerPlayerSuccessMessage", "Max reports per player has been set to %amount%")
@@ -1054,7 +1054,7 @@ public class BugReportSettings {
 									player.sendMessage(returnStartingMessage(ChatColor.GREEN) + getValueFromLanguageFile("buttonNames.cancelled", "Cancelled"));
 								} else {
 									if (checkForKey("useTitleInsteadOfMessage", true)) {
-										player.sendTitle(returnStartingMessage(ChatColor.RED), getValueFromLanguageFile("enterValidNumber", "Please enter a valid number"), 10, 70, 20);
+										Util.sendTitle(player, returnStartingMessage(ChatColor.RED), getValueFromLanguageFile("enterValidNumber", "Please enter a valid number"), 10, 70, 20);
 									} else {
 										player.sendMessage(returnStartingMessage(ChatColor.RED) + getValueFromLanguageFile("enterValidNumber", "Please enter a valid number"));
 									}
@@ -1070,7 +1070,7 @@ public class BugReportSettings {
 						reportCooldown = Integer.parseInt(value);
 					} catch (NumberFormatException e) {
 						if (checkForKey("useTitleInsteadOfMessage", true)) {
-							player.sendTitle(returnStartingMessage(ChatColor.RED), getValueFromLanguageFile("enterValidNumber", "Please enter a valid number"), 10, 70, 20);
+							Util.sendTitle(player, returnStartingMessage(ChatColor.RED), getValueFromLanguageFile("enterValidNumber", "Please enter a valid number"), 10, 70, 20);
 						} else {
 							player.sendMessage(returnStartingMessage(ChatColor.RED) + getValueFromLanguageFile("enterValidNumber", "Please enter a valid number"));
 						}
@@ -1080,7 +1080,7 @@ public class BugReportSettings {
 					config.set("report-cooldown", reportCooldown);
 					saveConfig();
 					if (checkForKey("useTitleInsteadOfMessage", true)) {
-						player.sendTitle(returnStartingMessage(ChatColor.GREEN), getValueFromLanguageFile("reportCooldownSuccessMessage", "Report cooldown has been set to %time% seconds").replace("%time%", String.valueOf(reportCooldown)), 10, 70, 20);
+						Util.sendTitle(player, returnStartingMessage(ChatColor.GREEN), getValueFromLanguageFile("reportCooldownSuccessMessage", "Report cooldown has been set to %time% seconds").replace("%time%", String.valueOf(reportCooldown)), 10, 70, 20);
 					} else {
 						player.sendMessage(returnStartingMessage(ChatColor.GREEN) + getValueFromLanguageFile("reportCooldownSuccessMessage", "Report cooldown has been set to %time% seconds").replace("%time%", String.valueOf(reportCooldown)));
 					}
@@ -1160,7 +1160,7 @@ public class BugReportSettings {
 
 					if (!checkIfChatColorIsValid(value)) {
 						if (checkForKey("useTitleInsteadOfMessage", true)) {
-							player.sendTitle(returnStartingMessage(ChatColor.RED), getValueFromLanguageFile("invalidColor", "Invalid color. Please enter a valid color"), 10, 70, 20);
+							Util.sendTitle(player, returnStartingMessage(ChatColor.RED), getValueFromLanguageFile("invalidColor", "Invalid color. Please enter a valid color"), 10, 70, 20);
 						} else {
 							player.sendMessage(returnStartingMessage(ChatColor.RED) + getValueFromLanguageFile("invalidColor", "Invalid color. Please enter a valid color"));
 						}

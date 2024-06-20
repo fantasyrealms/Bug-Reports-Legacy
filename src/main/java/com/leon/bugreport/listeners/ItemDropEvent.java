@@ -1,6 +1,6 @@
 package com.leon.bugreport.listeners;
 
-import com.leon.bugreport.ItemUtil;
+import com.leon.bugreport.Util;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,7 +16,7 @@ public class ItemDropEvent implements Listener {
 		if (droppedItemType == Material.WRITTEN_BOOK || droppedItemType == Material.WRITABLE_BOOK) {
 			ItemStack item = event.getItemDrop().getItemStack();
 			BookMeta bookMeta = (BookMeta) event.getItemDrop().getItemStack().getItemMeta();
-			if (bookMeta != null && ItemUtil.hasCustomModelData(item) && ItemUtil.getCustomModelData(item) == 1889234213) {
+			if (bookMeta != null && Util.hasCustomModelData(item) && Util.getCustomModelData(item) == 1889234213) {
 				event.setCancelled(true);
 			}
 		}
