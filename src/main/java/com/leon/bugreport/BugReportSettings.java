@@ -242,7 +242,7 @@ public class BugReportSettings {
 			if (Objects.equals(language, languageCode)) {
 				int slotIndex = 19 + (i - start);
 				if (slotIndex >= 19 && slotIndex < 26) {
-					gui.setItem(slotIndex, createButton(Material.LIME_DYE, getValueFromLanguageFile("buttonNames.true", "On")));
+					gui.setItem(slotIndex, createButton(XMaterial.LIME_DYE, getValueFromLanguageFile("buttonNames.true", "On")));
 				}
 			}
 		}
