@@ -324,11 +324,11 @@ public class bugreportGUI {
 			case "BugReportCategory":
 				return getValueFromLanguageFile("buttonNames.bugReportDetailsCategory", "Category ID");
 			case "BugReportStatus":
-				return getValueFromLanguageFile("buttonNames.bugReportDetailsStatus", "Status") + " (Click to change)";
+				return getValueFromLanguageFile("buttonNames.bugReportDetailsStatus", "Status");
 			case "BugReportTimestamp":
 				return getValueFromLanguageFile("buttonNames.bugReportDetailsTimestamp", "Timestamp");
 			case "BugReportLocation":
-				return getValueFromLanguageFile("buttonNames.bugReportDetailsLocation", "Location") + ChatColor.BOLD + " (Click to teleport)";
+				return getValueFromLanguageFile("buttonNames.bugReportDetailsLocation", "Location");
 			case "BugReportGamemode":
 				return getValueFromLanguageFile("buttonNames.bugReportDetailsGamemode", "Gamemode");
 			case "BugReportServerName":
