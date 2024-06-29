@@ -31,6 +31,20 @@ and that means there are some features not available on the Legacy version.
 > to install [NBTAPI](https://www.spigotmc.org/resources/nbt-api.7939/)
 > if you're planning to use in the legacy server version < 1.13
 
+## Adding Additional Details
+
+You can add additional details by extends the BugReportExpansion class, and register it on `onEnable()`.
+
+Check out the example in [`fantasyrealms/Bug-Report-Expansion`](https://github.com/fantasyrealms/Bug-Report-Expansion)
+
+> [!IMPORTANT]
+> You also need to add `unregister()` in `onDisable()`, otherwise
+> the expansion will still active.
+
+> [!IMPORTANT]
+> There is no error handling during processing of the additional details,
+> please also take care of error by yourself.
+
 ## Commands
 
 - bugreport <message> - **Adds a new bug report either via message or a GUI for the categories**.
