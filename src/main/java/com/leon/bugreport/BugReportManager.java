@@ -1,6 +1,7 @@
 package com.leon.bugreport;
 
 import com.cryptomorin.xseries.XMaterial;
+import com.leon.bugreport.API.BugReportExpansion;
 import com.leon.bugreport.discord.LinkDiscord;
 import com.leon.bugreport.extensions.PlanHook;
 import com.leon.bugreport.gui.BugReportConfirmationGUI;
@@ -59,6 +60,7 @@ public class BugReportManager implements Listener {
 	private static BugReportDatabase database;
 	private final List<Category> reportCategories;
 	private final LinkDiscord discord;
+	private final List<BugReportExpansion> reportExpansions;
 
 	public BugReportManager(Plugin plugin) {
 		BugReportManager.plugin = plugin;
@@ -90,6 +92,7 @@ public class BugReportManager implements Listener {
 		pluginColor = stringColorToColorCode(Objects.requireNonNull(config.getString("pluginColor", "Yellow").toUpperCase()));
 		discord = new LinkDiscord(webhookURL);
 		reportCategories = loadReportCategories();
+		reportExpansions = new ArrayList<>();
 	}
 
 	public static void setDebugMode(int setDebugMode) {
@@ -537,6 +540,24 @@ public class BugReportManager implements Listener {
 		return reportCategories;
 	}
 
+	public List<BugReportExpansion> getReportExpansions() {
+		return reportExpansions;
+	}
+
+	public boolean registerExpansion(BugReportExpansion expansion) {
+		if (debugMode) {
+			plugin.getLogger().info("Registering expansion [%s]".formatted(expansion.identifier()));
+		}
+		return reportExpansions.add(expansion);
+	}
+
+	public boolean unregisterExpansion(BugReportExpansion expansion) {
+		if (debugMode) {
+			plugin.getLogger().info("Unregistering expansion [%s]".formatted(expansion.identifier()));
+		}
+		return reportExpansions.removeIf(e -> e.identifier().equals(expansion.identifier()));
+	}
+
 	public void setWebhookURL(String webhookURL) {
 		if (debugMode) {
 			plugin.getLogger().info("Setting Discord Webhook URL to " + webhookURL);
@@ -550,8 +571,14 @@ public class BugReportManager implements Listener {
 		if (debugMode) {
 			plugin.getLogger().info("Submitting bug report for " + player.getName() + "...");
 		}
+		List<String> additionalDetails = new ArrayList<>();
 		List<String> reports = bugReports.getOrDefault(getStaticUUID(), new ArrayList<>(Collections.singletonList("DUMMY")));
 		UUID playerId = player.getUniqueId();
+
+		reportExpansions.forEach(e -> {
+			List<String> details = e.additionalDetails(player);
+			if (!details.isEmpty()) additionalDetails.addAll(details);
+		});
 
 		String playerName = player.getName();
 		String playerUUID = playerId.toString();
@@ -561,7 +588,9 @@ public class BugReportManager implements Listener {
 		String location = player.getWorld().getName() + ", " + player.getLocation().getBlockX() + ", " + player.getLocation().getBlockY() + ", " + player.getLocation().getBlockZ();
 		String reportID = reports.stream().filter(report -> report.contains("Report ID: ")).reduce((first, second) -> second).map(report -> Arrays.stream(report.split("\n")).filter(line -> line.contains("Report ID:")).findFirst().orElse("Report ID: 0")).map(reportIDLine -> reportIDLine.split(": ")[1].trim()).orElse("0");
 		String reportIDInt = String.valueOf(Integer.parseInt(reportID) + 1);
-		String header = "Username: " + playerName + "\n" + "UUID: " + playerUUID + "\n" + "World: " + worldName + "\n" + "hasBeenRead: 0" + "\n" + "Category ID: " + categoryId + "\n" + "Full Message: " + message + "\n" + "Archived: 0" + "\n" + "Report ID: " + reportIDInt + "\n" + "Timestamp: " + System.currentTimeMillis() + "\n" + "Location: " + location + "\n" + "Gamemode: " + gamemode;
+		String additional = additionalDetails.isEmpty() ? "None" : String.join("\n", additionalDetails);
+		String additionalHeader = additionalDetails.isEmpty() ? "None" : String.join("|", additionalDetails);
+		String header = "Username: " + playerName + "\n" + "UUID: " + playerUUID + "\n" + "World: " + worldName + "\n" + "hasBeenRead: 0" + "\n" + "Category ID: " + categoryId + "\n" + "Full Message: " + message + "\n" + "Archived: 0" + "\n" + "Report ID: " + reportIDInt + "\n" + "Timestamp: " + System.currentTimeMillis() + "\n" + "Location: " + location + "\n" + "Gamemode: " + gamemode + "\n" + "Additional Details: " + additionalHeader;
 
 		reports.add(header);
 		bugReports.put(playerId, reports);
@@ -576,7 +605,7 @@ public class BugReportManager implements Listener {
 		if (debugMode) {
 			plugin.getLogger().info("Adding bug report to database...");
 		}
-		database.addBugReport(playerName, playerId, worldName, header, message, location, gamemode, serverName);
+		database.addBugReport(playerName, playerId, worldName, header, message, location, gamemode, serverName, additional);
 
 		if (config.getBoolean("enableBugReportNotifications", true)) {
 			if (debugMode) {

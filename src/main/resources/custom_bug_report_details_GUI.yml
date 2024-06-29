@@ -58,6 +58,10 @@ bug_report_details_GUI:
       bugReportItem: BugReportGamemode
       material: DIAMOND_SWORD
       texture: ""
+    - slot: 36
+      bugReportItem: BugReportAdditional
+      material: OBSIDIAN
+      texture: ""
     - slot: 38 # For BugReportArchive and BugReportUnArchive, only one will ever show depending on the GUI. The other will be hidden.
       bugReportItem: BugReportUnArchive
       material: PLAYER_HEAD

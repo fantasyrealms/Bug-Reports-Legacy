@@ -40,6 +40,7 @@ public class bugreportGUI {
 			put("BugReportLocation", getValueFromLanguageFile("buttonNames.bugReportDetailsLocation", "Location") + ChatColor.BOLD + " (Click to teleport)");
 			put("BugReportGamemode", getValueFromLanguageFile("buttonNames.bugReportDetailsGamemode", "Gamemode"));
 			put("BugReportServerName", getValueFromLanguageFile("buttonNames.bugReportDetailsServerName", "Server Name"));
+			put("BugReportAdditional", getValueFromLanguageFile("buttonNames.bugReportDetailsAdditional", "Additional Details"));
 			put("BugReportUnArchive", getValueFromLanguageFile("buttonNames.unarchive", "Unarchive"));
 			put("BugReportArchive", getValueFromLanguageFile("buttonNames.archive", "Archive"));
 			put("BugReportBack", getValueFromLanguageFile("buttonNames.back", "Back"));
@@ -159,6 +160,18 @@ public class bugreportGUI {
 						messageItem.setItemMeta(meta);
 						itemStack = messageItem;
 						gui.setItem(slot, itemStack);
+					} else if (Objects.equals(bugReportItem, "BugReportAdditional")) {
+						String[] split = reportDetails.getOrDefault("Additional Details", "None").split("%NEWLINE%");
+						if (split.length > 1) {
+							ItemStack stack = createItemForReportDetail(bugReportItem, material, texture, reportDetails, isArchivedGUI);
+							ItemMeta meta = stack.getItemMeta();
+
+							meta.setLore(Arrays.stream(split).map(s -> ChatColor.WHITE + s).toList());
+							stack.setItemMeta(meta);
+
+							itemStack = stack;
+							gui.setItem(slot, itemStack);
+						}
 					} else {
 						itemStack = createItemForReportDetail(bugReportItem, material, texture, reportDetails, isArchivedGUI);
 						gui.setItem(slot, itemStack);
@@ -333,6 +346,8 @@ public class bugreportGUI {
 				return getValueFromLanguageFile("buttonNames.bugReportDetailsGamemode", "Gamemode");
 			case "BugReportServerName":
 				return getValueFromLanguageFile("buttonNames.bugReportDetailsServerName", "Server Name");
+			case "BugReportAdditional":
+				return getValueFromLanguageFile("buttonNames.bugReportDetailsAdditional", "Additional Details");
 			case "BugReportUnArchive":
 				return getValueFromLanguageFile("buttonNames.unarchive", "Unarchive");
 			case "BugReportArchive":
@@ -353,7 +368,7 @@ public class bugreportGUI {
 	 * @return true if the item supports custom textures; false otherwise.
 	 */
 	private static boolean isItemSupportsTexture(String bugReportItemKey) {
-		return List.of("BugReportUUID", "BugReportWorld", "BugReportMessage", "BugReportCategory", "BugReportTimestamp", "BugReportLocation", "BugReportGamemode", "BugReportServerName", "BugReportUnArchive", "BugReportArchive", "BugReportDelete").contains(bugReportItemKey);
+		return List.of("BugReportUUID", "BugReportWorld", "BugReportMessage", "BugReportCategory", "BugReportTimestamp", "BugReportLocation", "BugReportGamemode", "BugReportServerName", "BugReportUnArchive", "BugReportArchive", "BugReportDelete", "BugReportAdditional").contains(bugReportItemKey);
 	}
 
 	private static @NotNull Map<String, String> parseReportDetails(@NotNull String report) {
@@ -385,6 +400,7 @@ public class bugreportGUI {
 		String gamemode = getReportByKey(report, "Gamemode");
 		String status = getReportByKey(report, "Status");
 		String serverName = getReportByKey(report, "serverName");
+		String additional = getReportByKey(report, "Additional Details");
 
 		ItemStack emptyItem = createEmptyItem();
 		String locationTitle;
@@ -408,12 +424,14 @@ public class bugreportGUI {
 		}
 
 		boolean isLongMessage = fullMessage.length() > 32;
+		boolean isLongDetails = additional.length() > 32;
 
 		String timestampToDate = translateTimestampToDate(Long.parseLong(getReportByKey(report, "Timestamp")));
 		ItemStack uuidItem = createInfoItem(XMaterial.NAME_TAG, ChatColor.GOLD + "UUID", ChatColor.WHITE + uuid, false);
 		ItemStack worldItem = createInfoItem(XMaterial.GRASS_BLOCK, ChatColor.GOLD + "World", ChatColor.WHITE + world, false);
 		ItemStack messageItem = createInfoItem(XMaterial.PAPER, ChatColor.GOLD + "Full Message", ChatColor.WHITE + fullMessage, isLongMessage);
 		ItemStack serverNameItem = createInfoItem(XMaterial.COMPASS, ChatColor.GOLD + "Server Name", ChatColor.WHITE + serverName, false);
+		ItemStack additionalItem = createInfoItem(XMaterial.RESPAWN_ANCHOR.or(XMaterial.OBSIDIAN), ChatColor.GOLD + "Additional Details", ChatColor.WHITE + additional, isLongDetails);
 		ItemStack statusItem = null;
 
 		if (status == null) {
@@ -454,6 +472,19 @@ public class bugreportGUI {
 			}
 		}
 
+		String[] split = additional.split("%NEWLINE%");
+		if (split.length > 1) {
+			XMaterial material = XMaterial.RESPAWN_ANCHOR.or(XMaterial.OBSIDIAN);
+			ItemStack stack = material.parseItem();
+			ItemMeta meta = stack.getItemMeta();
+
+			meta.setDisplayName(ChatColor.GOLD + "Additional Details");
+			meta.setLore(Arrays.stream(split).map(s -> ChatColor.WHITE + s).toList());
+			stack.setItemMeta(meta);
+
+			additionalItem = stack;
+		}
+
 		ItemStack timestampItem = createInfoItem(XMaterial.CLOCK, ChatColor.GOLD + "Timestamp", ChatColor.WHITE + timestampToDate, false);
 		ItemStack locationItem = createInfoItem(XMaterial.COMPASS, ChatColor.GOLD + locationTitle, ChatColor.WHITE + location, false);
 		ItemStack gamemodeItem = createInfoItem(XMaterial.DIAMOND_SWORD, ChatColor.GOLD + "Gamemode", ChatColor.WHITE + gamemode, false);
@@ -471,6 +502,7 @@ public class bugreportGUI {
 		gui.setItem(4, worldItem);
 		gui.setItem(6, messageItem);
 		gui.setItem(8, serverNameItem);
+		gui.setItem(36, additionalItem);
 
 		gui.setItem(20, statusItem);
 		gui.setItem(22, timestampItem);

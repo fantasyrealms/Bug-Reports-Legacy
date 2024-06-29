@@ -241,4 +241,8 @@ public class BugReportPlugin extends JavaPlugin implements Listener {
 
 		new CacheCleanupListener();
 	}
+
+	public BugReportManager getReportManager() {
+		return reportManager;
+	}
 }

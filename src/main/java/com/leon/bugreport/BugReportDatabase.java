@@ -32,6 +32,7 @@ public class BugReportDatabase {
 		addColumnIfNotExists("bug_reports", "location", "TEXT");
 		addColumnIfNotExists("bug_reports", "gamemode", "TEXT");
 		addColumnIfNotExists("bug_reports", "serverName", "TEXT");
+		addColumnIfNotExists("bug_reports", "additionalDetails", "TEXT");
 
 		fixReportID();
 		makeAllHeadersEqualReport_ID();
@@ -356,9 +357,10 @@ public class BugReportDatabase {
 				String gamemode = resultSet.getString("gamemode");
 				String serverName = resultSet.getString("serverName");
 				String status = resultSet.getString("status");
+				String additionalDetails = resultSet.getString("additionalDetails");
 
 				List<String> reports = bugReports.getOrDefault(getStaticUUID(), new ArrayList<>(Collections.singletonList("DUMMY")));
-				reports.add("Username: " + username + "\n" + "UUID: " + playerId + "\n" + "World: " + world + "\n" + "Full Message: " + fullMessage + "\n" + "Header: " + header + "\n" + "Archived: " + archived + "\n" + "Report ID: " + report_id + "\n" + "Timestamp: " + timestamp + "\n" + "Location: " + location + "\n" + "Gamemode: " + gamemode + "\n" + "Status: " + status + "\n" + "Server Name: " + serverName);
+				reports.add("Username: " + username + "\n" + "UUID: " + playerId + "\n" + "World: " + world + "\n" + "Full Message: " + fullMessage + "\n" + "Header: " + header + "\n" + "Archived: " + archived + "\n" + "Report ID: " + report_id + "\n" + "Timestamp: " + timestamp + "\n" + "Location: " + location + "\n" + "Gamemode: " + gamemode + "\n" + "Status: " + status + "\n" + "Server Name: " + serverName + "\n" + "Additional Details: " + (additionalDetails != null ? additionalDetails.replace("\n", "%NEWLINE%") : null));
 
 				if (Bukkit.getPluginManager().isPluginEnabled("Plan")) {
 					PlanHook.getInstance().updateHook(playerId, username);
@@ -430,7 +432,7 @@ public class BugReportDatabase {
 
 	private static void createTables() {
 		try (Connection connection = dataSource.getConnection()) {
-			connection.createStatement().execute("CREATE TABLE IF NOT EXISTS bug_reports(rowid INTEGER, player_id TEXT, header TEXT, message TEXT, username TEXT, world TEXT, archived INTEGER DEFAULT 0, report_id INTEGER, timestamp BIGINT, status TEXT, serverName TEXT)");
+			connection.createStatement().execute("CREATE TABLE IF NOT EXISTS bug_reports(rowid INTEGER, player_id TEXT, header TEXT, message TEXT, username TEXT, world TEXT, archived INTEGER DEFAULT 0, report_id INTEGER, timestamp BIGINT, status TEXT, serverName TEXT, additionalDetails TEXT)");
 			connection.createStatement().execute("CREATE TABLE IF NOT EXISTS player_data(player_id TEXT, last_login_timestamp BIGINT DEFAULT 0)");
 			connection.createStatement().execute("CREATE TABLE IF NOT EXISTS bugreport_analytics(total_deleted INTEGER DEFAULT 0)");
 		} catch (Exception e) {
@@ -609,9 +611,9 @@ public class BugReportDatabase {
 
 	}
 
-	public void addBugReport(String username, @NotNull UUID playerId, String world, String header, String fullMessage, String location, String gamemode, String serverName) {
+	public void addBugReport(String username, @NotNull UUID playerId, String world, String header, String fullMessage, String location, String gamemode, String serverName, String additionalDetails) {
 		try (Connection connection = dataSource.getConnection()) {
-			PreparedStatement statement = connection.prepareStatement("INSERT INTO bug_reports(player_id, header, message, username, world, archived, report_id, timestamp, location, gamemode, status, serverName) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			PreparedStatement statement = connection.prepareStatement("INSERT INTO bug_reports(player_id, header, message, username, world, archived, report_id, timestamp, location, gamemode, status, serverName, additionalDetails) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			int report_id = 1;
 			ResultSet resultSet = connection.createStatement().executeQuery("SELECT report_id FROM bug_reports ORDER BY report_id DESC LIMIT 1");
 			if (resultSet.next()) {
@@ -629,6 +631,7 @@ public class BugReportDatabase {
 			statement.setString(10, gamemode);
 			statement.setString(11, "0");
 			statement.setString(12, serverName);
+			statement.setString(13, additionalDetails);
 
 			if (Bukkit.getPluginManager().isPluginEnabled("Plan")) {
 				PlanHook.getInstance().updateHook(playerId, username);
