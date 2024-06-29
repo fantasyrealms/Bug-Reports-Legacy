@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.leon.bugreport</groupId>
+  <groupId>net.fantasyrealms.bugreport</groupId>
   <artifactId>BugReports</artifactId>
   <version>0.12.4-Legacy</version>
   <build>
@@ -85,6 +85,10 @@
       <name>Maven Central</name>
       <url>https://repo.maven.apache.org/maven2/</url>
     </repository>
+    <repository>
+      <id>codemc-repo</id>
+      <url>https://repo.codemc.io/repository/maven-public/</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -109,6 +113,12 @@
       <groupId>com.github.plan-player-analytics</groupId>
       <artifactId>Plan</artifactId>
       <version>5.6.2820</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.tr7zw</groupId>
+      <artifactId>item-nbt-api-plugin</artifactId>
+      <version>2.13.0</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
